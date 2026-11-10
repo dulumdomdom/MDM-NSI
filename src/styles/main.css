@@ -1,0 +1,96 @@
+/* Порядок слоёв задан в plugins/primevue.ts: tailwind-base → primevue → tailwind-utilities */
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
+
+/*
+ * Дизайн-токены. Принцип: нейтральная основа, тонкие линии вместо теней,
+ * фирменный синий (#007dba / #004680 / #b9e5fa) — только как акцент и состояние.
+ */
+:root {
+  --brand: #007dba;
+  --brand-dark: #004680;
+  --brand-light: #b9e5fa;
+  --brand-soft: #eef7fc;
+  --canvas: #f5f6f8;
+  --surface: #ffffff;
+  --text: #101828;
+  --muted: #8a94a6;
+  --border: #e6e8ec;
+  --border-strong: #d0d5dd;
+  --accent: #d97706;
+  --danger: #d92d20;
+  --radius: 8px;
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.04);
+  --shadow-md: 0 1px 2px rgb(16 24 40 / 0.04);
+  --shadow-lg: 0 12px 32px -8px rgb(16 24 40 / 0.12);
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--text);
+  font-family: 'Manrope Variable', Manrope, system-ui, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+.p-component,
+.p-inputtext {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+/* Шифры и коды — моноширинный шрифт: позиции символов читаются глазом */
+.code-font {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Liberation Mono', monospace;
+  letter-spacing: 0.02em;
+}
+
+/* Клавиша в подсказках */
+.kbd {
+  display: inline-block;
+  min-width: 18px;
+  margin: 0 1px;
+  padding: 0 4px;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  font: 600 10px/15px ui-monospace, Consolas, monospace;
+  text-align: center;
+  color: var(--text);
+  background: #fff;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d0d5dd transparent;
+}
+
+/* Заголовки колонок таблиц — мелкие капители, как в инженерных реестрах */
+.p-datatable .p-datatable-column-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Плавное появление страниц — без «прыжков» */
+.page-enter-active {
+  transition: opacity 0.12s ease;
+}
+.page-enter-from {
+  opacity: 0;
+}

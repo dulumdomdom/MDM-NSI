@@ -1,0 +1,22 @@
+# Зависимости НЕ игнорируем при переносе на флешку — копируйте папку целиком.
+# В git они не коммитятся:
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.log
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+*.local
+
+# Служебные файлы Visual Studio и ярлыки Windows
+.vs/
+*.lnk
+
+# Собранный офлайн-пакет (публикуется в GitHub Releases, не в git)
+release/
+
+# Исходное ТЗ — не публикуется
+ТЗ.txt

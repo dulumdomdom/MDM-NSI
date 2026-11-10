@@ -1,0 +1,10 @@
+// Публичное API движка классификаторов. Чистый TS: можно переиспользовать на сервере/в воркере.
+export * from './conditions'
+export * from './structure'
+export * from './dependencies'
+export * from './parser'
+export * from './decoder'
+export * from './shortName'
+export * from './navigation'
+export * from './segments'
+export * from './edit'

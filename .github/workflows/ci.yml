@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Type-check
+        run: npm run type-check
+      - name: Unit
+        run: npm run test:unit
+      - name: Build
+        run: npm run build:only
+      - name: E2E
+        run: |
+          npm run e2e:install
+          npx cross-env PLAYWRIGHT_BROWSERS_PATH=0 playwright install-deps chromium
+          npm run test:e2e
+        env:
+          CI: 'true'
