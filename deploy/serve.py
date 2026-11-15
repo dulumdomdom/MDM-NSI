@@ -10,7 +10,12 @@ import os
 import sys
 import webbrowser
 
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app")
+HERE = os.path.dirname(os.path.abspath(__file__))
+# Offline package -> ./app; source checkout -> ../dist (build it with `npm run build`)
+ROOT = next(
+    (p for p in (os.path.join(HERE, "app"), os.path.join(HERE, "..", "dist")) if os.path.isfile(os.path.join(p, "index.html"))),
+    os.path.join(HERE, "app"),
+)
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
 
 
@@ -47,7 +52,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     if not os.path.isfile(os.path.join(ROOT, "index.html")):
-        sys.exit(f"index.html not found in {ROOT}")
+        sys.exit(
+            "The built app (index.html) was not found.\n"
+            "  1. Download mdm-nsi-offline-<version>.zip from GitHub Releases and run start-linux.sh inside, or\n"
+            "  2. in the source folder run `npm ci && npm run build`, then start this script again."
+        )
     # localhost only: service workers (demo data) require localhost or HTTPS
     server = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     url = f"http://localhost:{PORT}/"

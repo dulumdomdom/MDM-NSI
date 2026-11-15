@@ -1,6 +1,7 @@
 # MDM NSI - local web server for an offline Windows PC (no Node.js, no admin rights, no installs).
-# Serves ./app on http://localhost:<Port>/ with SPA fallback (unknown routes -> index.html).
-# Usage:  serve.ps1 [-Port 8080] [-Root .\app] [-NoBrowser]
+# Serves ./app (offline package) or ../dist (source checkout) on http://localhost:<Port>/
+# with SPA fallback (unknown routes -> index.html).
+# Usage:  serve.ps1 [-Port 8080] [-Root <folder with index.html>] [-NoBrowser]
 # Messages are ASCII on purpose: Windows PowerShell 5.1 misreads UTF-8 scripts without BOM.
 
 param(
@@ -29,11 +30,35 @@ $mime = @{
   '.txt'   = 'text/plain; charset=utf-8'
 }
 
+# Where the built app is:
+#   offline package  -> <package>\app
+#   source checkout  -> <repo>\dist  (built here automatically if node_modules is present)
+$repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+if (-not $PSBoundParameters.ContainsKey('Root')) {
+  $dist = Join-Path $repo 'dist'
+  if (-not (Test-Path (Join-Path $Root 'index.html')) -and -not (Test-Path (Join-Path $dist 'index.html'))) {
+    $vite = Join-Path $repo 'node_modules\vite\bin\vite.js'
+    $node = Join-Path $repo 'node.exe'
+    if (-not (Test-Path $node)) { $node = (Get-Command node -ErrorAction SilentlyContinue).Source }
+    if ((Test-Path $vite) -and $node) {
+      Write-Host 'No build yet - building the app (about a minute)...' -ForegroundColor Cyan
+      Push-Location $repo
+      try { & $node $vite build --logLevel warn } finally { Pop-Location }
+    }
+  }
+  if (-not (Test-Path (Join-Path $Root 'index.html')) -and (Test-Path (Join-Path $dist 'index.html'))) { $Root = $dist }
+}
+
 $rootFull = [IO.Path]::GetFullPath($Root)
 if (-not (Test-Path (Join-Path $rootFull 'index.html'))) {
-  Write-Host "index.html not found in $rootFull" -ForegroundColor Red
+  Write-Host "The built app (index.html) was not found." -ForegroundColor Red
+  Write-Host 'Do one of the following:'
+  Write-Host '  1. Download mdm-nsi-offline-<version>.zip from GitHub Releases, unzip it, run start-windows.cmd inside.'
+  Write-Host '  2. In this source folder: unzip node_modules-win-x64.zip (GitHub Releases) here and run again -'
+  Write-Host '     the app will be built automatically (node.exe from this folder is used).'
   exit 1
 }
+Write-Host "Serving $rootFull"
 
 # localhost only: no URL ACL / admin rights needed; service workers (demo data) require localhost or HTTPS
 $prefix = "http://localhost:$Port/"

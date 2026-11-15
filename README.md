@@ -17,7 +17,11 @@ MSW 2 · Vitest · Playwright.
 [Releases](../../releases), распакуйте и запустите `start-windows.cmd` (Linux — `start-linux.sh`).
 Откроется `http://localhost:8080/`. Подробно — [docs/DEPLOY_OFFLINE.md](docs/DEPLOY_OFFLINE.md).
 
-**Для разработки:**
+**Из исходников без интернета (Windows x64):** скачайте из [Releases](../../releases) архив
+`node_modules-win-x64.zip`, распакуйте его в корень проекта (рядом с `package.json`) и запустите
+`deploy\start-windows.cmd` — приложение соберётся само и откроется в браузере.
+
+**Для разработки (с интернетом):**
 
 ```bash
 npm ci
