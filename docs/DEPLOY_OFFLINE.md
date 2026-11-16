@@ -5,7 +5,7 @@
 | Сценарий | Что нужно на целевом ПК | Для чего |
 |---|---|---|
 | **A. Офлайн-пакет (демо-стенд)** | Windows 10/11 *или* Linux с `python3`, любой современный браузер | показать, обучить, проверить настройки; один пользователь на ПК |
-| **B. Исходники + готовые `node_modules`** | Windows x64; Node.js ≥ 20.19 — только для разработки | запускать из исходников и дорабатывать код без интернета |
+| **B. Исходники (`node_modules` уже в репозитории)** | Windows x64; Node.js ≥ 20.19 — только для разработки | запускать из исходников и дорабатывать код без интернета |
 | **C. Сервер в контуре** | nginx или IIS + бэкенд по контракту `docs/API.md` | рабочая многопользовательская система |
 
 ---
@@ -70,7 +70,7 @@ npm run smoke:offline -- http://localhost:8080/
 
 | Симптом | Что сделать |
 |---|---|
-| «The built app (index.html) was not found» | Скрипт запущен из папки исходников, где нет ни сборки, ни `node_modules`. Возьмите готовый офлайн-пакет из Releases **или** распакуйте рядом `node_modules-win-x64.zip` (сценарий B) — тогда сборка выполнится сама |
+| «The built app (index.html) was not found» | Скрипт запущен из папки исходников, где нет ни сборки, ни `node_modules` (например, скачан неполный архив). Скачайте репозиторий целиком (`git clone` или **Code → Download ZIP**) — `node_modules` в нём есть, сборка выполнится сама |
 | «Port 8080 is busy» | `start-windows.cmd -Port 8081` / `./start-linux.sh 8081` |
 | Окно мигнуло и закрылось | Запустите из `cmd`: `powershell -ExecutionPolicy Bypass -File serve.ps1` — увидите ошибку. Запрет скриптов групповой политикой → попросите ИТ разрешить `serve.ps1` или используйте `serve.py` |
 | Белая страница, в консоли браузера «Failed to register a ServiceWorker» | Откройте именно `http://localhost:…`, а не IP-адрес или `file://` |
@@ -90,32 +90,34 @@ npm run smoke:offline -- http://localhost:8080/
 - **Chromium для e2e** ставится внутрь `node_modules` (`PLAYWRIGHT_BROWSERS_PATH=0`), `npm run test:e2e` в сеть не ходит.
 - **Версии зафиксированы** (`save-exact` в `.npmrc` + `package-lock.json`).
 
-### Быстрый путь: готовые `node_modules` из релиза (Windows x64)
+### Быстрый путь: всё уже в репозитории (Windows x64)
 
-На машине с интернетом скачайте со страницы **Releases** два файла:
+`node_modules` для Windows x64 **хранится в самом репозитории**, поэтому достаточно получить код
+любым способом на машине с интернетом:
 
-- исходники — **Source code (zip)** (или `git clone`);
-- **`node_modules-win-x64.zip`** — все зависимости вместе с Chromium для e2e (~0.85 ГБ в распакованном виде).
+- `git clone https://github.com/dulumdomdom/MDM-NSI.git`, **или**
+- на странице репозитория **Code → Download ZIP**.
 
-Перенесите их на целевой ПК и распакуйте так, чтобы папка `node_modules` оказалась **в корне проекта**,
-рядом с `package.json`:
-
-```
-mdm-nsi/
-  node_modules/      ← из node_modules-win-x64.zip
-  package.json
-  deploy/
-  src/ …
-```
-
-> «Извлечь всё» в Проводнике по умолчанию создаёт лишнюю папку `node_modules-win-x64\node_modules` —
-> укажите для распаковки сам корень проекта или перенесите `node_modules` на уровень выше.
-
-Дальше:
+Перенесите папку (или zip) на целевой ПК и распакуйте. Дальше:
 
 - **просто запустить** — `deploy\start-windows.cmd`: если сборки ещё нет, скрипт соберёт приложение
   сам (берёт `node.exe` из корня проекта, а если его нет — установленный Node.js) и откроет браузер;
-- **разрабатывать** — нужен Node.js ≥ 20.19 (лучше 22 LTS): `npm run dev`, `npm run ci`, `npm run test:e2e`.
+- **разрабатывать** — нужен Node.js ≥ 20.19 (лучше 22 LTS): `npm run dev`, `npm run ci`;
+- **e2e-тесты** — Chromium (0.7 ГБ) не помещается в git целиком: GitHub не принимает файлы больше 100 МБ.
+  Он лежит архивом из частей по 90 МБ в `vendor/playwright-browsers/`. Один раз выполните
+
+  ```bash
+  npm run e2e:restore
+  ```
+
+  — части склеятся и распакуются в `node_modules/playwright-core/.local-browsers`; после этого
+  `npm run test:e2e` работает без сети.
+
+Те же зависимости одним архивом — `node_modules-win-x64.zip` на странице **Releases** (если скачивание
+оттуда доступно): распакуйте его в корень проекта, рядом с `package.json`.
+
+> Обновили зависимости (`npm install …`)? Закоммитьте изменённый `node_modules`; если менялась версия
+> Playwright — `npm run e2e:install`, затем `node scripts/browsers.mjs pack` и закоммитьте `vendor/`.
 
 ### Подготовить `node_modules` самостоятельно
 

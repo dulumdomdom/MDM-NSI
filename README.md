@@ -17,9 +17,10 @@ MSW 2 · Vitest · Playwright.
 [Releases](../../releases), распакуйте и запустите `start-windows.cmd` (Linux — `start-linux.sh`).
 Откроется `http://localhost:8080/`. Подробно — [docs/DEPLOY_OFFLINE.md](docs/DEPLOY_OFFLINE.md).
 
-**Из исходников без интернета (Windows x64):** скачайте из [Releases](../../releases) архив
-`node_modules-win-x64.zip`, распакуйте его в корень проекта (рядом с `package.json`) и запустите
-`deploy\start-windows.cmd` — приложение соберётся само и откроется в браузере.
+**Из исходников без интернета (Windows x64):** `node_modules` уже лежит в репозитории —
+скачайте его целиком (`git clone` или **Code → Download ZIP**), перенесите на целевой ПК и запустите
+`deploy\start-windows.cmd`: приложение соберётся само и откроется в браузере. Chromium для e2e-тестов —
+`npm run e2e:restore` (собирается из частей в `vendor/`).
 
 **Для разработки (с интернетом):**
 
@@ -76,6 +77,7 @@ npm run dev          # http://localhost:5173
 | `npm run preview` | раздать `dist/` локально |
 | `npm run lint` / `npm run type-check` | ESLint (без `any`) / vue-tsc |
 | `npm run test:unit` | Vitest: движок шифров, RBAC, поиск, маршруты, замещение, интеграции, CSV, данные |
+| `npm run e2e:restore` | собрать Chromium для e2e из частей в `vendor/playwright-browsers` (один раз после клонирования) |
 | `npm run test:e2e` | Playwright (Chromium внутри `node_modules`, без сети) |
 | `npm run ci` | lint → type-check → unit → build — то же, что в CI и в `pre-push` |
 
@@ -92,6 +94,8 @@ src/
   views/       страницы
   mocks/       «сервер» на MSW: данные, обработчики, обходные листы, журнал, сохранение демо
 deploy/        мини-серверы для офлайн-пакета, примеры nginx / IIS
+node_modules/  зависимости для Windows x64 — в репозитории, чтобы работать без интернета
+vendor/        Chromium для e2e частями по 90 МБ (npm run e2e:restore)
 docs/          инструкции
 e2e/           сценарии Playwright
 ```

@@ -6,3 +6,6 @@
 *.ps1 text eol=crlf
 *.sh text eol=lf
 *.zip binary
+# Зависимости и части архивов храним байт в байт — без правки переводов строк
+node_modules/** -text
+vendor/** binary

@@ -1,22 +1,24 @@
-# Зависимости НЕ игнорируем при переносе на флешку — копируйте папку целиком.
-# В git они не коммитятся:
-node_modules/
-dist/
-coverage/
-playwright-report/
-test-results/
-*.log
+# node_modules (Windows x64) хранится в репозитории — проект работает сразу после клонирования без интернета.
+# Кроме кешей и Chromium для e2e: он лежит частями в vendor/playwright-browsers (npm run e2e:restore)
+node_modules/.vite/
+node_modules/.cache/
+node_modules/playwright-core/.local-browsers/
+/dist/
+/coverage/
+/playwright-report/
+/test-results/
+/*.log
 .DS_Store
-.vscode/*
-!.vscode/extensions.json
-*.local
+/.vscode/*
+!/.vscode/extensions.json
+/*.local
 
 # Служебные файлы Visual Studio и ярлыки Windows
-.vs/
+/.vs/
 *.lnk
 
 # Собранный офлайн-пакет (публикуется в GitHub Releases, не в git)
-release/
+/release/
 
 # Исходное ТЗ — не публикуется
 ТЗ.txt
